@@ -1,5 +1,3 @@
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { Sidebar } from "./Sidebar";
 import { ChatArea } from "./ChatArea";
@@ -12,7 +10,7 @@ interface MobileViewProps {
     name: string;
     otherUserId?: Id<"users">;
     groupId?: Id<"groups">;
-    isOnline?: boolean; // <<< Type definition includes isOnline
+    isOnline?: boolean;
   } | null;
   setSelectedChat: (chat: any) => void;
   showChatList: boolean;
@@ -44,9 +42,6 @@ export function MobileView({
     );
   }
 
-  // Get the online status directly from the prop
-  const isOnline = selectedChat?.type === "private" ? selectedChat.isOnline : true;
-
   return (
     <div className="h-full w-full flex flex-col">
       {/* Mobile chat header with back button */}
@@ -71,19 +66,14 @@ export function MobileView({
                 }`}>
                   {selectedChat.type === "private" ? selectedChat.name[0]?.toUpperCase() : "#"}
                 </div>
-                {/* Re-add the status indicator, using the `isOnline` variable */}
-                {selectedChat.type === "private" && (
-                  <div className={`status-indicator ${isOnline ? 'bg-green-500' : 'bg-gray-500'}`}>
-                    {isOnline && <div className="pulse-ring"></div>}
-                  </div>
-                )}
+                {/* Status indicator dot has been removed */}
               </div>
               <div>
                 <h2 className="font-semibold text-white">{selectedChat.name}</h2>
-                {/* Re-add the Online/Offline text, using the `isOnline` variable */}
+                {/* "Online/Offline" text has been removed */}
                 <p className="text-sm text-discord-text">
                   {selectedChat.type === "private" 
-                    ? (isOnline ? "Online" : "Offline")
+                    ? "Private chat" 
                     : "Group chat"
                   }
                 </p>
