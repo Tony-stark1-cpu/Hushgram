@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { UserList } from "./UserList";
@@ -95,7 +95,7 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
               <span>{tab.icon}</span>
               <span>{tab.label}</span>
               {/* Unread count badge */}
-              {tab.id === "chats" && tab.unreadCount && tab.unreadCount > 0 && activeTab !== "chats" && (
+              {tab.id === "chats" && tab.unreadCount && tab.unreadCount > 0 && (
                 <div className="absolute -top-1 -right-1 bg-discord-danger text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 animate-pulse">
                   {tab.unreadCount > 99 ? "99+" : tab.unreadCount}
                 </div>

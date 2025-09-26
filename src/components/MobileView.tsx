@@ -51,12 +51,10 @@ export function MobileView({
   }
 
   return (
-    // RED BORDER: This should wrap the entire screen and not be taller than it.
-    <div className="h-full w-full flex flex-col border-4 border-red-500">
+    <div className="h-full w-full flex flex-col">
       {/* Mobile chat header with back button */}
       {selectedChat && (
-        // GREEN BORDER: This should be at the top of the screen, inside the red border.
-        <div className="sticky top-0 z-10 bg-discord-secondary/90 backdrop-blur-md border-b border-discord-border flex-shrink-0 border-2 border-green-500">
+        <div className="sticky top-0 z-10 bg-discord-secondary/90 backdrop-blur-md border-b border-discord-border flex-shrink-0">
           <div className="flex items-center p-4">
             <button
               onClick={() => setShowChatList(true)}
@@ -105,8 +103,8 @@ export function MobileView({
         </div>
       )}
       
-      {/* BLUE BORDER: This should fill all remaining space below the green border. */}
-      <div className="flex-1 min-h-0 border-4 border-blue-500">
+      {/* This wrapper correctly constrains the ChatArea to the remaining space */}
+      <div className="flex-1 min-h-0">
         <ChatArea
           currentUserId={currentUserId}
           selectedChat={selectedChat}
