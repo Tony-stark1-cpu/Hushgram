@@ -40,10 +40,11 @@ export function UserProfileDropdown({ user, onLogout, onClose }: UserProfileDrop
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-white truncate">{user?.username || "Unknown"}</h3>
-              <p className="text-sm text-green-400 flex items-center space-x-1">
+              {/* This is the corrected line */}
+              <div className="text-sm text-green-400 flex items-center space-x-1">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                 <span>Online</span>
-              </p>
+              </div>
             </div>
           </div>
         </div>

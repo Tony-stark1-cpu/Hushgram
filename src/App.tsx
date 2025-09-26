@@ -121,7 +121,7 @@ export default function App() {
 
   if (isMobile) {
     return (
-      <>
+      <div className="h-screen w-screen overflow-hidden bg-discord-dark">
         <MobileView
           currentUserId={currentUserId}
           selectedChat={selectedChat}
@@ -140,12 +140,12 @@ export default function App() {
             },
           }}
         />
-      </>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-discord-dark via-discord-secondary to-discord-dark text-white flex">
+    <div className="h-screen bg-gradient-to-br from-discord-dark via-discord-secondary to-discord-dark text-white flex overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 pointer-events-none"></div>
       <Sidebar
         currentUserId={currentUserId}

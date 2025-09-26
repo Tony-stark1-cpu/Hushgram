@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
@@ -26,25 +25,7 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages, currentUserId, chatId }: MessageListProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  
   const typingIndicators = useQuery(api.messages.getTypingIndicators, { chatId });
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  useEffect(() => {
-    // Scroll to bottom when component mounts or messages change
-    const timer = setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [messages.length]);
 
   const formatTime = (timestamp: number) => {
     const now = new Date();
@@ -106,7 +87,7 @@ export function MessageList({ messages, currentUserId, chatId }: MessageListProp
   ) || [];
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-discord-dark to-discord-secondary">
+    <div className="p-4 space-y-4 bg-gradient-to-b from-discord-dark to-discord-secondary">
       {messages.length === 0 ? (
         <div className="text-center text-discord-text py-16 fade-in">
           <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-glow">
@@ -188,8 +169,6 @@ export function MessageList({ messages, currentUserId, chatId }: MessageListProp
           </div>
         </div>
       )}
-
-      <div ref={messagesEndRef} />
     </div>
   );
 }

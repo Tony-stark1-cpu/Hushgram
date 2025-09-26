@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
@@ -26,8 +25,6 @@ export function MobileView({
   showChatList, 
   setShowChatList 
 }: MobileViewProps) {
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
-
   // Get other user info for private chats to check online status
   const otherUser = useQuery(
     api.users.getCurrentUser,
@@ -35,29 +32,6 @@ export function MobileView({
       ? { sessionId: `user_${selectedChat.otherUserId}` }
       : "skip"
   );
-
-  useEffect(() => {
-    const handleResize = () => {
-      // Detect keyboard on mobile by checking viewport height change
-      const viewportHeight = window.visualViewport?.height || window.innerHeight;
-      const windowHeight = window.screen.height;
-      const heightDiff = windowHeight - viewportHeight;
-      
-      if (heightDiff > 150) { // Keyboard is likely open
-        setKeyboardHeight(heightDiff);
-      } else {
-        setKeyboardHeight(0);
-      }
-    };
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', handleResize);
-      return () => window.visualViewport?.removeEventListener('resize', handleResize);
-    } else {
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, []);
 
   if (showChatList) {
     return (
@@ -77,13 +51,12 @@ export function MobileView({
   }
 
   return (
-    <div 
-      className="mobile-chat-container bg-discord-dark text-white"
-      style={{ paddingBottom: keyboardHeight > 0 ? `${keyboardHeight}px` : '0px' }}
-    >
+    // RED BORDER: This should wrap the entire screen and not be taller than it.
+    <div className="h-full w-full flex flex-col border-4 border-red-500">
       {/* Mobile chat header with back button */}
       {selectedChat && (
-        <div className="sticky top-0 z-10 bg-discord-secondary/90 backdrop-blur-md border-b border-discord-border flex-shrink-0">
+        // GREEN BORDER: This should be at the top of the screen, inside the red border.
+        <div className="sticky top-0 z-10 bg-discord-secondary/90 backdrop-blur-md border-b border-discord-border flex-shrink-0 border-2 border-green-500">
           <div className="flex items-center p-4">
             <button
               onClick={() => setShowChatList(true)}
@@ -132,8 +105,8 @@ export function MobileView({
         </div>
       )}
       
-      {/* Chat Area - takes remaining space */}
-      <div className="flex-1 flex flex-col min-h-0 mobile-chat-area">
+      {/* BLUE BORDER: This should fill all remaining space below the green border. */}
+      <div className="flex-1 min-h-0 border-4 border-blue-500">
         <ChatArea
           currentUserId={currentUserId}
           selectedChat={selectedChat}
@@ -144,11 +117,10 @@ export function MobileView({
             }
           }}
           isMobile={true}
-          keyboardHeight={keyboardHeight}
         />
       </div>
 
-      {/* Floating action button for new chat */}
+      {/* Floating action button is now handled correctly by the layout */}
       {!selectedChat && (
         <button
           onClick={() => setShowChatList(true)}

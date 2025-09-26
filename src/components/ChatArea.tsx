@@ -16,7 +16,6 @@ interface ChatAreaProps {
   } | null;
   setSelectedChat: (chat: any) => void;
   isMobile?: boolean;
-  keyboardHeight?: number;
 }
 
 export function ChatArea({ 
@@ -24,19 +23,17 @@ export function ChatArea({
   selectedChat, 
   setSelectedChat, 
   isMobile = false,
-  keyboardHeight = 0
 }: ChatAreaProps) {
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
-  const [inputFocused, setInputFocused] = useState(false);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const sendMessage = useMutation(api.messages.sendMessage);
   const updateTypingIndicator = useMutation(api.messages.updateTypingIndicator);
   const markMessagesSeen = useMutation(api.messages.markMessagesSeen);
 
-  // Get other user info for private chats to check online status
   const otherUser = useQuery(
     api.users.getCurrentUser,
     selectedChat?.type === "private" && selectedChat.otherUserId
@@ -44,7 +41,6 @@ export function ChatArea({
       : "skip"
   );
 
-  // Get messages based on chat type
   const privateMessages = useQuery(
     api.messages.getPrivateMessages,
     selectedChat?.type === "private" && selectedChat.otherUserId
@@ -60,8 +56,13 @@ export function ChatArea({
   );
 
   const messages = selectedChat?.type === "private" ? privateMessages : groupMessages;
+  
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
-  // Mark messages as seen when chat is opened
   useEffect(() => {
     if (selectedChat && messages && messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
@@ -74,7 +75,6 @@ export function ChatArea({
     }
   }, [selectedChat, messages, currentUserId, markMessagesSeen]);
 
-  // Handle typing indicator
   const handleTyping = () => {
     if (!selectedChat) return;
 
@@ -87,12 +87,10 @@ export function ChatArea({
       });
     }
 
-    // Clear existing timeout
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
 
-    // Set new timeout to stop typing indicator
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
       updateTypingIndicator({
@@ -103,7 +101,6 @@ export function ChatArea({
     }, 2000);
   };
 
-  // Handle message send
   const handleSendMessage = async () => {
     if (!message.trim() || !selectedChat) return;
 
@@ -117,7 +114,6 @@ export function ChatArea({
 
       setMessage("");
       
-      // Stop typing indicator
       if (isTyping) {
         setIsTyping(false);
         updateTypingIndicator({
@@ -131,7 +127,6 @@ export function ChatArea({
     }
   };
 
-  // Cleanup typing indicator on unmount or chat change
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) {
@@ -147,7 +142,6 @@ export function ChatArea({
     };
   }, [selectedChat?.id]);
 
-  // Handle online/offline status
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
@@ -180,28 +174,12 @@ export function ChatArea({
     );
   }
 
-  // Check if other user is online (for private chats)
   const isOtherUserOnline = selectedChat.type === "private" 
     ? otherUser?.isOnline && (Date.now() - (otherUser?.lastSeen || 0)) < 60000
     : true;
 
-  const containerStyle = isMobile && keyboardHeight > 0 
-    ? { height: `calc(100vh - ${keyboardHeight}px)` }
-    : {};
-
   return (
-    <div 
-      className={`flex-1 flex flex-col bg-discord-dark relative ${isMobile ? 'mobile-chat-area' : 'h-screen'}`}
-      style={containerStyle}
-    >
-      {/* Offline indicator */}
-      {!isOnline && (
-        <div className="bg-discord-warning text-discord-dark px-4 py-2 text-center text-sm font-medium">
-          You're offline. Messages will be sent when you reconnect.
-        </div>
-      )}
-
-      {/* Chat Header - Hide on mobile as it's handled in MobileView */}
+    <div className="h-full flex flex-col bg-discord-dark relative">
       {!isMobile && (
         <div className="h-16 bg-discord-secondary/80 backdrop-blur-md border-b border-discord-border flex items-center justify-between px-4 shadow-lg flex-shrink-0">
           <div className="flex items-center space-x-3">
@@ -237,9 +215,7 @@ export function ChatArea({
               </p>
             </div>
           </div>
-
           <div className="flex items-center space-x-2">
-            {/* Close button */}
             <button
               onClick={() => setSelectedChat(null)}
               className="p-2 text-discord-text hover:text-white hover:bg-discord-danger/20 hover:text-discord-danger rounded-full transition-all duration-200 hover:scale-110"
@@ -252,8 +228,7 @@ export function ChatArea({
         </div>
       )}
 
-      {/* Messages */}
-      <div className={isMobile ? "mobile-messages-container" : "flex-1"} style={isMobile ? { paddingBottom: keyboardHeight > 0 ? '140px' : '100px' } : {}}>
+      <div ref={messagesContainerRef} className="flex-1 min-h-0 overflow-y-auto">
         <MessageList
           messages={messages || []}
           currentUserId={currentUserId}
@@ -261,19 +236,14 @@ export function ChatArea({
         />
       </div>
 
-      {/* Message Input */}
-      <div className={isMobile ? "mobile-input-container" : "flex-shrink-0"}>
-        <MessageInput
-          message={message}
-          setMessage={setMessage}
-          onSend={handleSendMessage}
-          onTyping={handleTyping}
-          placeholder={`Message ${selectedChat.name}...`}
-          onFocus={() => setInputFocused(true)}
-          onBlur={() => setInputFocused(false)}
-          isMobile={isMobile}
-        />
-      </div>
+      <MessageInput
+        message={message}
+        setMessage={setMessage}
+        onSend={handleSendMessage}
+        onTyping={handleTyping}
+        placeholder={`Message ${selectedChat.name}...`}
+        isMobile={isMobile}
+      />
     </div>
   );
 }
