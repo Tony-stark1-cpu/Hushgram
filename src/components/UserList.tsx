@@ -31,7 +31,6 @@ export function UserList({ currentUserId, selectedChat, setSelectedChat }: UserL
         const chatId = `private_${currentUserId < user._id ? currentUserId : user._id}_${currentUserId < user._id ? user._id : currentUserId}`;
         const isSelected = selectedChat?.id === chatId;
         
-        // Check if user is actually online (within last minute)
         const isOnline = user.isOnline && (Date.now() - user.lastSeen) < 60000;
 
         return (
@@ -43,6 +42,7 @@ export function UserList({ currentUserId, selectedChat, setSelectedChat }: UserL
                 id: chatId,
                 name: user.username,
                 otherUserId: user._id,
+                isOnline: isOnline, // Changed
               });
             }}
             className={`p-3 border-b border-discord-border cursor-pointer hover:bg-discord-hover transition-colors ${

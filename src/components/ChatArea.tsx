@@ -13,6 +13,7 @@ interface ChatAreaProps {
     name: string;
     otherUserId?: Id<"users">;
     groupId?: Id<"groups">;
+    isOnline?: boolean; // Changed
   } | null;
   setSelectedChat: (chat: any) => void;
   isMobile?: boolean;
@@ -33,13 +34,6 @@ export function ChatArea({
   const sendMessage = useMutation(api.messages.sendMessage);
   const updateTypingIndicator = useMutation(api.messages.updateTypingIndicator);
   const markMessagesSeen = useMutation(api.messages.markMessagesSeen);
-
-  const otherUser = useQuery(
-    api.users.getCurrentUser,
-    selectedChat?.type === "private" && selectedChat.otherUserId
-      ? { sessionId: `user_${selectedChat.otherUserId}` }
-      : "skip"
-  );
 
   const privateMessages = useQuery(
     api.messages.getPrivateMessages,
@@ -174,8 +168,9 @@ export function ChatArea({
     );
   }
 
+  // Changed
   const isOtherUserOnline = selectedChat.type === "private" 
-    ? otherUser?.isOnline && (Date.now() - (otherUser?.lastSeen || 0)) < 60000
+    ? selectedChat.isOnline 
     : true;
 
   return (

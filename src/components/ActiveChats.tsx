@@ -28,7 +28,6 @@ export function ActiveChats({ currentUserId, selectedChat, setSelectedChat }: Ac
           ? ("otherUser" in chat ? chat.otherUser?.username || "Unknown User" : "Unknown User")
           : ("group" in chat ? chat.group?.name || "Unknown Group" : "Unknown Group");
 
-        // Check if other user is online (for private chats)
         const isOnline = chat.chatType === "private" 
           ? ("otherUser" in chat ? chat.otherUser?.isOnline && (Date.now() - (chat.otherUser?.lastSeen || 0)) < 60000 : false)
           : true;
@@ -43,6 +42,7 @@ export function ActiveChats({ currentUserId, selectedChat, setSelectedChat }: Ac
                 name: displayName,
                 otherUserId: chat.otherUserId,
                 groupId: chat.groupId,
+                isOnline: isOnline, // Changed
               });
             }}
             className={`relative p-3 border-b border-discord-border cursor-pointer hover:bg-discord-hover transition-colors ${
@@ -59,7 +59,6 @@ export function ActiveChats({ currentUserId, selectedChat, setSelectedChat }: Ac
                   {chat.chatType === "private" ? displayName[0]?.toUpperCase() : "#"}
                 </div>
                 
-                {/* Online status indicator */}
                 {chat.chatType === "private" && (
                   <div className={`status-indicator ${isOnline ? 'bg-green-500' : 'bg-gray-500'}`}>
                     {isOnline && <div className="pulse-ring"></div>}
@@ -71,7 +70,6 @@ export function ActiveChats({ currentUserId, selectedChat, setSelectedChat }: Ac
                 <div className="flex items-center justify-between">
                   <h3 className="font-medium text-white truncate">{displayName}</h3>
                   <div className="flex items-center space-x-2">
-                    {/* Unread count badge */}
                     {chat.unreadCount > 0 && (
                       <div className="unread-badge">
                         {chat.unreadCount > 99 ? "99+" : chat.unreadCount}
