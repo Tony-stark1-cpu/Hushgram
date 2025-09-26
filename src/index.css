@@ -1,0 +1,271 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .glass-effect {
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
+  }
+  
+  .gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  
+  .message-bubble {
+    @apply relative px-4 py-2 rounded-2xl max-w-xs lg:max-w-md break-words;
+    animation: messageSlideIn 0.3s ease-out;
+  }
+  
+  .message-bubble::before {
+    content: '';
+    @apply absolute w-0 h-0;
+  }
+  
+  .message-bubble.own::before {
+    @apply -right-2 top-3;
+    border: 8px solid transparent;
+    border-left-color: #5865f2;
+  }
+  
+  .message-bubble.other::before {
+    @apply -left-2 top-3;
+    border: 8px solid transparent;
+    border-right-color: #36393f;
+  }
+  
+  .typing-indicator {
+    @apply flex space-x-1 items-center;
+  }
+  
+  .typing-dot {
+    @apply w-2 h-2 bg-discord-text rounded-full;
+    animation: typingBounce 1.4s infinite ease-in-out;
+  }
+  
+  .typing-dot:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+  
+  .typing-dot:nth-child(2) {
+    animation-delay: -0.16s;
+  }
+  
+  .floating-action-btn {
+    @apply fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg flex items-center justify-center text-white transition-all duration-300 hover:scale-110 hover:shadow-xl;
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+  
+  .pulse-ring {
+    @apply absolute inset-0 rounded-full border-2 border-green-400;
+    animation: pulseRing 2s infinite;
+  }
+  
+  .status-indicator {
+    @apply absolute -bottom-1 -right-1 w-4 h-4 border-2 border-discord-secondary rounded-full;
+  }
+  
+  .message-status {
+    @apply text-xs opacity-70 flex items-center space-x-1;
+  }
+
+  .unread-badge {
+    @apply absolute -top-1 -right-1 bg-discord-danger text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1;
+    animation: bounceIn 0.3s ease-out;
+  }
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes typingBounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-discord-dark;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-discord-border rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-discord-text;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .message-bubble {
+    @apply max-w-[280px];
+  }
+  
+  /* Ensure proper mobile layout */
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  #root {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Fix mobile viewport issues */
+  .mobile-chat-container {
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for better mobile support */
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  /* Mobile chat area specific fixes */
+  .mobile-chat-area {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .mobile-messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 120px; /* Increased space for input */
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 0;
+  }
+
+  .mobile-input-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(54, 57, 63, 0.98);
+    backdrop-filter: blur(15px);
+    border-top: 1px solid #40444b;
+    z-index: 100;
+    padding: env(safe-area-inset-bottom, 0) 0 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Prevent zoom on input focus */
+  input[type="text"], input[type="password"], textarea {
+    font-size: 16px;
+  }
+
+  /* Handle keyboard appearance */
+  .mobile-input-focused {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  }
+}
+
+/* Prevent horizontal scroll */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+  button, .cursor-pointer {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
