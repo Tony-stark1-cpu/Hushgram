@@ -12,6 +12,7 @@ interface MobileViewProps {
     name: string;
     otherUserId?: Id<"users">;
     groupId?: Id<"groups">;
+    isOnline?: boolean; // <<< Type definition includes isOnline
   } | null;
   setSelectedChat: (chat: any) => void;
   showChatList: boolean;
@@ -25,13 +26,6 @@ export function MobileView({
   showChatList, 
   setShowChatList 
 }: MobileViewProps) {
-  // Get other user info for private chats to check online status
-  const otherUser = useQuery(
-    api.users.getCurrentUser,
-    selectedChat?.type === "private" && selectedChat.otherUserId
-      ? { sessionId: `user_${selectedChat.otherUserId}` }
-      : "skip"
-  );
 
   if (showChatList) {
     return (
@@ -49,6 +43,9 @@ export function MobileView({
       </div>
     );
   }
+
+  // Get the online status directly from the prop
+  const isOnline = selectedChat?.type === "private" ? selectedChat.isOnline : true;
 
   return (
     <div className="h-full w-full flex flex-col">
@@ -74,26 +71,19 @@ export function MobileView({
                 }`}>
                   {selectedChat.type === "private" ? selectedChat.name[0]?.toUpperCase() : "#"}
                 </div>
+                {/* Re-add the status indicator, using the `isOnline` variable */}
                 {selectedChat.type === "private" && (
-                  <div className={`status-indicator ${
-                    otherUser?.isOnline && (Date.now() - (otherUser?.lastSeen || 0)) < 60000 
-                      ? 'bg-green-500' 
-                      : 'bg-gray-500'
-                  }`}>
-                    {otherUser?.isOnline && (Date.now() - (otherUser?.lastSeen || 0)) < 60000 && (
-                      <div className="pulse-ring"></div>
-                    )}
+                  <div className={`status-indicator ${isOnline ? 'bg-green-500' : 'bg-gray-500'}`}>
+                    {isOnline && <div className="pulse-ring"></div>}
                   </div>
                 )}
               </div>
               <div>
                 <h2 className="font-semibold text-white">{selectedChat.name}</h2>
+                {/* Re-add the Online/Offline text, using the `isOnline` variable */}
                 <p className="text-sm text-discord-text">
                   {selectedChat.type === "private" 
-                    ? (otherUser?.isOnline && (Date.now() - (otherUser?.lastSeen || 0)) < 60000 
-                        ? "Online" 
-                        : "Offline"
-                      )
+                    ? (isOnline ? "Online" : "Offline")
                     : "Group chat"
                   }
                 </p>
@@ -103,7 +93,6 @@ export function MobileView({
         </div>
       )}
       
-      {/* This wrapper correctly constrains the ChatArea to the remaining space */}
       <div className="flex-1 min-h-0">
         <ChatArea
           currentUserId={currentUserId}
@@ -118,7 +107,6 @@ export function MobileView({
         />
       </div>
 
-      {/* Floating action button is now handled correctly by the layout */}
       {!selectedChat && (
         <button
           onClick={() => setShowChatList(true)}
