@@ -13,7 +13,7 @@ interface ChatAreaProps {
     name: string;
     otherUserId?: Id<"users">;
     groupId?: Id<"groups">;
-    isOnline?: boolean; // Changed
+    isOnline?: boolean;
   } | null;
   setSelectedChat: (chat: any) => void;
   isMobile?: boolean;
@@ -71,7 +71,6 @@ export function ChatArea({
 
   const handleTyping = () => {
     if (!selectedChat) return;
-
     if (!isTyping) {
       setIsTyping(true);
       updateTypingIndicator({
@@ -80,11 +79,9 @@ export function ChatArea({
         isTyping: true,
       });
     }
-
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
-
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
       updateTypingIndicator({
@@ -97,7 +94,6 @@ export function ChatArea({
 
   const handleSendMessage = async () => {
     if (!message.trim() || !selectedChat) return;
-
     try {
       await sendMessage({
         content: message.trim(),
@@ -105,9 +101,7 @@ export function ChatArea({
         recipientId: selectedChat.otherUserId,
         groupId: selectedChat.groupId,
       });
-
       setMessage("");
-      
       if (isTyping) {
         setIsTyping(false);
         updateTypingIndicator({
@@ -139,10 +133,8 @@ export function ChatArea({
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -167,12 +159,7 @@ export function ChatArea({
       </div>
     );
   }
-
-  // Changed
-  const isOtherUserOnline = selectedChat.type === "private" 
-    ? selectedChat.isOnline 
-    : true;
-
+  
   return (
     <div className="h-full flex flex-col bg-discord-dark relative">
       {!isMobile && (
@@ -186,27 +173,13 @@ export function ChatArea({
               }`}>
                 {selectedChat.type === "private" ? selectedChat.name[0]?.toUpperCase() : "#"}
               </div>
-              {selectedChat.type === "private" && isOtherUserOnline && (
-                <div className="status-indicator bg-green-500">
-                  <div className="pulse-ring"></div>
-                </div>
-              )}
-              {selectedChat.type === "private" && !isOtherUserOnline && (
-                <div className="status-indicator bg-gray-500"></div>
-              )}
+              {/* The status dot indicators that were here have been DELETED */}
             </div>
             <div>
               <h2 className="font-semibold text-white text-lg">{selectedChat.name}</h2>
               <p className="text-sm text-discord-text flex items-center space-x-2">
                 <span>{selectedChat.type === "private" ? "Private chat" : "Group chat"}</span>
-                {selectedChat.type === "private" && (
-                  <>
-                    <span>•</span>
-                    <span className={isOtherUserOnline ? "text-green-400" : "text-gray-400"}>
-                      {isOtherUserOnline ? "Online" : "Offline"}
-                    </span>
-                  </>
-                )}
+                {/* The "Online/Offline" text that was here has been DELETED */}
               </p>
             </div>
           </div>
