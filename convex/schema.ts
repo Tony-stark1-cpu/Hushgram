@@ -48,6 +48,7 @@ const applicationTables = {
   })
     .index("by_private_chat", ["senderId", "recipientId"])
     .index("by_group", ["groupId"])
+    .index("by_sender", ["senderId"])
     .index("by_timestamp", ["timestamp"])
     .index("by_status", ["status"]),
 

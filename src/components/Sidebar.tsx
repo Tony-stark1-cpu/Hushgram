@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react"; // Import useMutation
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import { UserList } from "./UserList";
@@ -28,6 +28,9 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
   const currentUser = useQuery(api.users.getCurrentUser, 
     currentUserId ? { sessionId: localStorage.getItem("chat-session-id") || "" } : "skip"
   );
+  
+  // Get the logout mutation hook
+  const logoutUser = useMutation(api.users.logoutUser);
 
   const activeChats = useQuery(api.messages.getActiveChats, 
     currentUserId ? { userId: currentUserId } : "skip"
@@ -41,9 +44,20 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
     { id: "groups", label: "Groups", icon: "🏢" },
   ];
 
-  const handleLogout = () => {
-    localStorage.removeItem("chat-session-id");
-    window.location.reload();
+  // Update the handleLogout function to be async and call the mutation
+  const handleLogout = async () => {
+    if (!currentUserId) return;
+    
+    try {
+      // Call the backend mutation to delete all user data
+      await logoutUser({ userId: currentUserId });
+    } catch (error) {
+      console.error("Failed to logout and delete user data:", error);
+    } finally {
+      // Always clear session and reload, even if the backend call fails
+      localStorage.removeItem("chat-session-id");
+      window.location.reload();
+    }
   };
 
   return (
@@ -90,9 +104,9 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
             >
               <span>{tab.icon}</span>
               <span>{tab.label}</span>
-              {tab.id === "chats" && tab.unreadCount && tab.unreadCount > 0 && (
+              {tab.id === "chats" && totalUnreadCount > 0 && (
                 <div className="absolute -top-1 -right-1 bg-discord-danger text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 animate-pulse">
-                  {tab.unreadCount > 99 ? "99+" : tab.unreadCount}
+                  {totalUnreadCount > 99 ? "99+" : totalUnreadCount}
                 </div>
               )}
             </button>
@@ -126,7 +140,6 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
         )}
       </div>
 
-      {/* Create Group Modal */}
       {showCreateGroup && (
         <CreateGroupModal
           currentUserId={currentUserId}
