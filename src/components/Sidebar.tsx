@@ -33,7 +33,6 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
     currentUserId ? { userId: currentUserId } : "skip"
   );
 
-  // Calculate total unread count
   const totalUnreadCount = activeChats?.reduce((total, chat) => total + (chat.unreadCount || 0), 0) || 0;
 
   const tabs = [
@@ -43,9 +42,7 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
   ];
 
   const handleLogout = () => {
-    // Clear session storage
     localStorage.removeItem("chat-session-id");
-    // Reload the page to reset the app state
     window.location.reload();
   };
 
@@ -69,7 +66,6 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
               </svg>
             </button>
             
-            {/* User Dropdown */}
             {showUserDropdown && (
               <UserProfileDropdown
                 user={currentUser}
@@ -94,7 +90,6 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
             >
               <span>{tab.icon}</span>
               <span>{tab.label}</span>
-              {/* Unread count badge */}
               {tab.id === "chats" && tab.unreadCount && tab.unreadCount > 0 && (
                 <div className="absolute -top-1 -right-1 bg-discord-danger text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 animate-pulse">
                   {tab.unreadCount > 99 ? "99+" : tab.unreadCount}
@@ -106,31 +101,29 @@ export function Sidebar({ currentUserId, selectedChat, setSelectedChat }: Sideba
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full">
-          {activeTab === "chats" && (
-            <ActiveChats
-              currentUserId={currentUserId}
-              selectedChat={selectedChat}
-              setSelectedChat={setSelectedChat}
-            />
-          )}
-          {activeTab === "users" && (
-            <UserList
-              currentUserId={currentUserId}
-              selectedChat={selectedChat}
-              setSelectedChat={setSelectedChat}
-            />
-          )}
-          {activeTab === "groups" && (
-            <GroupList
-              currentUserId={currentUserId}
-              selectedChat={selectedChat}
-              setSelectedChat={setSelectedChat}
-              onCreateGroup={() => setShowCreateGroup(true)}
-            />
-          )}
-        </div>
+      <div className="flex-1 overflow-y-auto">
+        {activeTab === "chats" && (
+          <ActiveChats
+            currentUserId={currentUserId}
+            selectedChat={selectedChat}
+            setSelectedChat={setSelectedChat}
+          />
+        )}
+        {activeTab === "users" && (
+          <UserList
+            currentUserId={currentUserId}
+            selectedChat={selectedChat}
+            setSelectedChat={setSelectedChat}
+          />
+        )}
+        {activeTab === "groups" && (
+          <GroupList
+            currentUserId={currentUserId}
+            selectedChat={selectedChat}
+            setSelectedChat={setSelectedChat}
+            onCreateGroup={() => setShowCreateGroup(true)}
+          />
+        )}
       </div>
 
       {/* Create Group Modal */}

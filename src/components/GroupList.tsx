@@ -20,7 +20,7 @@ export function GroupList({ currentUserId, selectedChat, setSelectedChat, onCrea
   const availableGroups = publicGroups?.filter(g => !userGroupIds.has(g._id)) || [];
 
   return (
-    <div className="overflow-y-auto">
+    <div>
       {/* Create Group Button */}
       <div className="p-3 border-b border-discord-border">
         <button
@@ -119,7 +119,6 @@ export function GroupList({ currentUserId, selectedChat, setSelectedChat, onCrea
           currentUserId={currentUserId}
           onClose={() => setShowJoinModal(null)}
           onJoined={() => {
-            // Refresh the groups list after joining
             setShowJoinModal(null);
           }}
         />

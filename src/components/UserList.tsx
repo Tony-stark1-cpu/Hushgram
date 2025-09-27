@@ -60,7 +60,7 @@ export function UserList({ currentUserId, selectedChat, setSelectedChat }: UserL
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-medium text-white truncate">{user.username}</h3>
-                <p className={`text-sm flex items-center space-x-1 ${isOnline ? 'text-green-400' : 'text-gray-400'}`}>
+                <div className={`text-sm flex items-center space-x-1 ${isOnline ? 'text-green-400' : 'text-gray-400'}`}>
                   <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-400' : 'bg-gray-400'}`}></div>
                   <span>{isOnline ? 'Online' : 'Offline'}</span>
                   {!isOnline && (
@@ -68,7 +68,7 @@ export function UserList({ currentUserId, selectedChat, setSelectedChat }: UserL
                       • Last seen {Math.floor((Date.now() - user.lastSeen) / 60000)}m ago
                     </span>
                   )}
-                </p>
+                </div>
               </div>
             </div>
           </div>
